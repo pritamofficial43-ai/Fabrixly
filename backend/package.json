@@ -1,0 +1,90 @@
+{
+  "name": "fabrixly-backend",
+  "version": "1.0.0",
+  "description": "AI-powered fashion backend for Fabrixly",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "openai": "^4.2.0",
+    "stripe": "^12.0.0"
+  }
+}
+backend/index.js
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import Stripe from "stripe";
+import OpenAI from "openai";
+
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json());
+
+const PORT = process.env.PORT || 4000;
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// ✅ Root test
+app.get("/", (req, res) => {
+  res.send("✅ Fabrixly Backend is running!");
+});
+
+// 🧠 AI Design API
+app.post("/design/create", async (req, res) => {
+  try {
+    const prompt = req.body.prompt || "Modern AI Fashion Design";
+    const result = await openai.images.generate({
+      model: "gpt-image-1",
+      prompt,
+      size: "1024x1024"
+    });
+    res.json({ image: result.data[0].url });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 💳 Stripe Payment API
+app.post("/payment/create", async (req, res) => {
+  try {
+    const { amount } = req.body;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      payment_method_types: ["card"]
+    });
+    res.json({ clientSecret: paymentIntent.client_secret });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+backend/.env.example
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+PORT=4000
+OPENAI_API_KEY=sk-xxxxxxxxxxxx
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxx
+VITE_STRIPE_PUBLIC_KEY=pk_test_xxxxxxxxxxx
+JWT_SECRET=mySuperSecretKey
+FRONTEND_URL=https://fabrixly.vercel.app
+backend/README.md# 👕 Fabrixly Backend
+AI-powered fashion backend for Fabrixly.
+
+## 🚀 Features
+- Express API server
+- OpenAI integration for AI designs
+- Stripe payments
+- CORS + dotenv ready
+- 100% Render deploy compatible
+
+## 🛠️ Run Locally
+```bash
+npm install
+cp .env.example .env
+npm run dev
