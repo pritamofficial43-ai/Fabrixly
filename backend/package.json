@@ -6,3 +6,22 @@
   "type": "module",
   "scripts": {
     "start
+{
+  "name": "fabrixly-backend",
+  "version": "1.0.0",
+  "description": "AI-powered fashion backend for Fabrixly",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
+    "express": "^4.18.2",
+    "openai": "^4.2.0",
+    "stripe": "^12.0.0",
+    "axios": "^1.7.4"
+  }
+}
